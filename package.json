@@ -2,7 +2,13 @@
   "name": "noise-mapper",
   "version": "0.1.0",
   "private": true,
+
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
   "scripts": {
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma migrate deploy && next build",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
