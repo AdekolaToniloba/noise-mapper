@@ -27,15 +27,35 @@ export default function Home() {
   const [searchLocation, setSearchLocation] = useState<LatLng | null>(null);
 
   // Fetch noise reports when component mounts
-  const { data, error: fetchError, mutate } = useSWR("/api/noise", fetcher);
+  const {
+    data,
+    error: fetchError,
+    mutate,
+  } = useSWR("/api/noise", fetcher, {
+    onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+      // Only retry up to 3 times
+      if (retryCount >= 3) return;
+
+      // Retry after 3 seconds
+      setTimeout(() => revalidate({ retryCount }), 3000);
+    },
+  });
 
   useEffect(() => {
     if (data) {
-      setNoiseReports(data);
+      // Ensure data is an array before setting it
+      if (Array.isArray(data)) {
+        setNoiseReports(data);
+      } else {
+        setNoiseReports([]);
+        setError("Invalid data format received from server");
+      }
       setLoading(false);
     }
     if (fetchError) {
+      console.error("Fetch error:", fetchError);
       setError(`Error loading noise data: ${fetchError.message}`);
+      setNoiseReports([]); // Initialize with empty array to prevent map errors
       setLoading(false);
     }
   }, [data, fetchError]);
@@ -79,6 +99,9 @@ export default function Home() {
       {error && (
         <div className="absolute top-16 left-4 right-4 z-50 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm sm:text-base">
           {error}
+          <div className="text-sm mt-1">
+            Please check your database connection or try again later.
+          </div>
         </div>
       )}
 

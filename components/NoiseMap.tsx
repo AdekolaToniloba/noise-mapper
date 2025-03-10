@@ -158,21 +158,40 @@ export default function NoiseMap({
   const [showHeatMap, setShowHeatMap] = useState<boolean>(true);
 
   const circleMarkers = useMemo(() => {
-    return reports.map((report) => {
-      const radius = Math.max(20, (report.decibels - 40) * 0.8);
-      const intensity = Math.min(1, (report.decibels - 40) / 80);
-      const r = Math.floor(255 * intensity);
-      const g = Math.floor(255 * (1 - intensity));
-      const color = `rgb(${r}, ${g}, 0)`;
-      return (
-        <Circle
-          key={report.id}
-          center={[report.lat, report.lng]}
-          radius={radius}
-          pathOptions={{ fillColor: color, fillOpacity: 0.6, stroke: false }}
-        />
-      );
-    });
+    // Ensure reports is an array before trying to map over it
+    if (!Array.isArray(reports)) {
+      console.error("Expected reports to be an array, got:", reports);
+      return [];
+    }
+
+    return reports
+      .map((report) => {
+        // Add null/undefined checking
+        if (
+          !report ||
+          typeof report.lat !== "number" ||
+          typeof report.lng !== "number" ||
+          typeof report.decibels !== "number"
+        ) {
+          console.error("Invalid report data:", report);
+          return null;
+        }
+
+        const radius = Math.max(20, (report.decibels - 40) * 0.8);
+        const intensity = Math.min(1, (report.decibels - 40) / 80);
+        const r = Math.floor(255 * intensity);
+        const g = Math.floor(255 * (1 - intensity));
+        const color = `rgb(${r}, ${g}, 0)`;
+        return (
+          <Circle
+            key={report.id}
+            center={[report.lat, report.lng]}
+            radius={radius}
+            pathOptions={{ fillColor: color, fillOpacity: 0.6, stroke: false }}
+          />
+        );
+      })
+      .filter(Boolean);
   }, [reports]);
 
   const defaultCenter: LatLng = { lat: 6.5244, lng: 3.3792 };
