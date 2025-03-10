@@ -1,6 +1,11 @@
-// hooks/useAudioAnalyzer.ts
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AudioAnalyzerHookReturn } from "../types";
+import { debounce } from "lodash";
+
+// Define interfaces for WebkitAudioContext
+interface WindowWithWebkitAudio extends Window {
+  webkitAudioContext: typeof AudioContext;
+}
 
 export default function useAudioAnalyzer(): AudioAnalyzerHookReturn {
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -10,9 +15,10 @@ export default function useAudioAnalyzer(): AudioAnalyzerHookReturn {
   const audioContextRef = useRef<AudioContext | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const analyzerRef = useRef<AnalyserNode | null>(null);
+  const workerRef = useRef<Worker | null>(null);
   const timerId = useRef<number | null>(null);
 
-  // Cleanup function
+  // Create cleanup function without dependencies
   const cleanup = useCallback(() => {
     if (timerId.current) {
       window.clearInterval(timerId.current);
@@ -29,35 +35,52 @@ export default function useAudioAnalyzer(): AudioAnalyzerHookReturn {
       audioContextRef.current = null;
     }
 
+    if (workerRef.current) {
+      workerRef.current.terminate();
+      workerRef.current = null;
+    }
+
     analyzerRef.current = null;
   }, []);
 
-  // Calculate decibel levels using RMS method
+  // Create a stable reference to the debounced function
+  const debouncedSetDecibelsRef = useRef<((value: number) => void) | null>(
+    null
+  );
+  useEffect(() => {
+    debouncedSetDecibelsRef.current = debounce((value: number) => {
+      setCurrentDecibels(value);
+    }, 500);
+
+    return () => {
+      if (debouncedSetDecibelsRef.current) {
+        (
+          debouncedSetDecibelsRef.current as unknown as { cancel: () => void }
+        ).cancel();
+      }
+    };
+  }, []);
+
+  // Wrapper for the debounced function
+  const debouncedSetDecibels = useCallback((value: number) => {
+    if (debouncedSetDecibelsRef.current) {
+      debouncedSetDecibelsRef.current(value);
+    }
+  }, []);
+
+  // Calculate decibel levels using Web Worker
   const calculateDecibels = useCallback(() => {
-    if (!analyzerRef.current) return;
+    if (!analyzerRef.current || !workerRef.current) return;
 
     const bufferLength = analyzerRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     analyzerRef.current.getByteTimeDomainData(dataArray);
 
-    // Calculate RMS (Root Mean Square)
-    let sum = 0;
-    for (let i = 0; i < bufferLength; i++) {
-      // Convert from 0-255 to -1 to 1
-      const amplitude = dataArray[i] / 128 - 1;
-      sum += amplitude * amplitude;
-    }
-    const rms = Math.sqrt(sum / bufferLength);
-
-    // Convert RMS to decibels (approximation)
-    // 0 dB is the threshold of hearing, 120+ dB is pain
-    // This is a rough estimate - real decibel measurement requires calibration
-    const dB = 20 * Math.log10(rms) + 90; // +90 is an offset to get values in a typical range
-
-    // Ensure we're in a reasonable range (40-120 dB)
-    const normalizedDB = Math.min(Math.max(dB, 40), 120);
-
-    setCurrentDecibels(parseFloat(normalizedDB.toFixed(1)));
+    // Send data to worker for processing
+    workerRef.current.postMessage({
+      dataArray: Array.from(dataArray), // Convert to regular array for transferability
+      bufferLength,
+    });
   }, []);
 
   // Start recording
@@ -65,13 +88,23 @@ export default function useAudioAnalyzer(): AudioAnalyzerHookReturn {
     try {
       cleanup();
 
+      // Create Web Worker
+      workerRef.current = new Worker("/audioWorker.js");
+
+      // Set up worker message handler
+      workerRef.current.onmessage = (e) => {
+        debouncedSetDecibels(e.data.decibels);
+      };
+
       // Get microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
 
-      // Set up audio context and analyzer
-      const audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
+      // Set up audio context and analyzer - use proper typing for webkitAudioContext
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as WindowWithWebkitAudio).webkitAudioContext;
+      const audioContext = new AudioContextClass();
       audioContextRef.current = audioContext;
 
       const source = audioContext.createMediaStreamSource(stream);
@@ -80,10 +113,10 @@ export default function useAudioAnalyzer(): AudioAnalyzerHookReturn {
       source.connect(analyzer);
       analyzerRef.current = analyzer;
 
-      // Start measuring decibel levels with debounce (500ms)
+      // Start measuring decibel levels
       timerId.current = window.setInterval(() => {
         calculateDecibels();
-      }, 500);
+      }, 500); // 500ms interval for performance
 
       setIsRecording(true);
       setError(null);
@@ -95,7 +128,7 @@ export default function useAudioAnalyzer(): AudioAnalyzerHookReturn {
       );
       setIsRecording(false);
     }
-  }, [calculateDecibels, cleanup]);
+  }, [calculateDecibels, cleanup, debouncedSetDecibels]);
 
   // Stop recording
   const stopRecording = useCallback(() => {

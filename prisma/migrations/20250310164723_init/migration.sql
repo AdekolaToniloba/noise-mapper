@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "NoiseReport" (
+    "id" TEXT NOT NULL,
+    "lat" DOUBLE PRECISION NOT NULL,
+    "lng" DOUBLE PRECISION NOT NULL,
+    "decibels" DOUBLE PRECISION NOT NULL,
+    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "NoiseReport_pkey" PRIMARY KEY ("id")
+);
