@@ -5,6 +5,11 @@ import "leaflet/dist/leaflet.css";
 import { NoiseReport, LatLng } from "../types";
 
 // Import HeatLayer type
+// Add this interface near your other type declarations
+interface LeafletElement extends HTMLElement {
+  _leaflet_map?: L.Map;
+}
+
 declare module "leaflet" {
   interface HeatMapOptions {
     minOpacity?: number;
@@ -61,21 +66,10 @@ function HeatMapLayer({
   const map = useMap();
   const heatLayerRef = useRef<L.HeatLayer | null>(null);
 
-  // const createLocationIcon = () => {
-  //   return L.divIcon({
-  //     html: `<div class="flex items-center justify-center">
-  //             <div class="bg-blue-500 w-4 h-4 rounded-full border-2 border-white"></div>
-  //             <div class="absolute w-8 h-8 bg-blue-500 rounded-full opacity-30"></div>
-  //           </div>`,
-  //     className: "location-marker",
-  //     iconSize: [20, 20],
-  //     iconAnchor: [10, 10],
-  //   });
-  // };
-
   useEffect(() => {
     // Ensure leaflet.heat is loaded (handled via script or module import)
     import("leaflet.heat").then((module) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const heatLayerFn = module.default || L.heatLayer; // Fallback to L.heatLayer if default export isn't correct
       const points: Array<[number, number, number]> = reports.map((report) => [
         report.lat,
@@ -191,14 +185,14 @@ export default function NoiseMap({
       const mapElement = document.querySelector(".leaflet-container");
       if (mapElement) {
         // TypeScript workaround for custom property
-        (mapElement as any)._leaflet_map = map;
+        (mapElement as LeafletElement)._leaflet_map = map;
       }
 
       return () => {
         // Clean up when component unmounts
         const mapEl = document.querySelector(".leaflet-container");
         if (mapEl) {
-          delete (mapEl as any)._leaflet_map;
+          delete (mapEl as LeafletElement)._leaflet_map;
         }
       };
     }, [map]);
@@ -236,7 +230,7 @@ export default function NoiseMap({
           onClick={() => {
             const mapElement = document.querySelector(".leaflet-container");
             if (mapElement) {
-              const map = (mapElement as any)._leaflet_map;
+              const map = (mapElement as LeafletElement)._leaflet_map;
               if (map && typeof map.zoomIn === "function") {
                 map.zoomIn();
               }
@@ -251,7 +245,7 @@ export default function NoiseMap({
           onClick={() => {
             const mapElement = document.querySelector(".leaflet-container");
             if (mapElement) {
-              const map = (mapElement as any)._leaflet_map;
+              const map = (mapElement as LeafletElement)._leaflet_map;
               if (map && typeof map.zoomOut === "function") {
                 map.zoomOut();
               }
