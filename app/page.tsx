@@ -96,9 +96,17 @@ export default function Home() {
       </div>
 
       {/* Error message */}
-      {error && (
-        <div className="absolute top-16 left-4 right-4 z-50 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm sm:text-base">
+      {/* {error && (
+        <div className="absolute top-18 w-8/12 left-4 right-4 z-50   bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm sm:text-base">
           {error}
+          <div className="text-sm mt-1">
+            Please check your database connection or try again later.
+          </div>
+        </div>
+      )} */}
+      {error && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">
+          <p className="font-semibold">{error}</p>
           <div className="text-sm mt-1">
             Please check your database connection or try again later.
           </div>
