@@ -20,4 +20,5 @@ model NoiseReport {
   lng       Float
   decibels  Float
   timestamp DateTime @default(now())
+  @@index([timestamp]) // Add index for faster sorting
 }

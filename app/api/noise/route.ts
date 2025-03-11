@@ -1,20 +1,24 @@
-// app/api/noise/route.ts
 import { NextResponse } from "next/server";
 import { NoiseReport } from "../../../types";
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// Singleton Prisma client
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const prisma = globalForPrisma.prisma || new PrismaClient();
 
-// GET all reports
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
+
 export async function GET() {
   try {
     const reports = await prisma.noiseReport.findMany({
       orderBy: { timestamp: "desc" },
-      take: 1000, // Limit to latest 1000 reports
+      take: 1000,
     });
-
     return NextResponse.json(reports);
   } catch (error) {
+    console.error("GET Error:", error);
     return NextResponse.json(
       { error: "Failed to fetch noise data" },
       { status: 500 }
@@ -22,12 +26,10 @@ export async function GET() {
   }
 }
 
-// POST new report
 export async function POST(request: Request) {
   try {
     const body: NoiseReport = await request.json();
 
-    // Validate the inputs
     if (
       !body.lat ||
       !body.lng ||
@@ -43,7 +45,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create report
     const newReport = await prisma.noiseReport.create({
       data: {
         lat: body.lat,
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newReport, { status: 201 });
   } catch (error) {
+    console.error("POST Error:", error);
     return NextResponse.json(
       { error: "Failed to save report" },
       { status: 500 }

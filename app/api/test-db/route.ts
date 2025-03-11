@@ -11,7 +11,7 @@ export async function GET() {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error occurred";
-
+    console.log("DATABASE_URL:", process.env.DATABASE_URL);
     return NextResponse.json(
       { error: `Database connection failed: ${errorMessage}` },
       { status: 500 }
