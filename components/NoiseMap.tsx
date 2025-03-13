@@ -90,10 +90,10 @@ function HeatMapLayer({
         heatLayerRef.current.redraw();
       } else {
         const heatLayer = L.heatLayer(points, {
-          radius: 50, // Larger radius for bigger heat spots
+          radius: 30, // Larger radius for bigger heat spots
           blur: 10, // Less blur for sharper, more distinct heat
-          maxZoom: 17,
-          max: 0.5, // Lower max to amplify all intensities
+          maxZoom: 15,
+          max: 0.7, // Lower max to amplify all intensities
           minOpacity: 0.3, // Ensure even low-intensity areas are visible
           gradient: {
             0.0: "green", // Start with a brighter, more visible color
