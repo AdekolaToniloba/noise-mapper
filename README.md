@@ -97,6 +97,20 @@ The project is organized as follows:
     └── leaflet.heat.d.ts
 ```
 
+|Directory/File   | Description |
+| --------        | ------- |
+| ```app/```        | Contains pages and API routes, including the main page and noise API.   |
+|   ```components/```     |  React components like `NoiseInput`, `NoiseMap`, and `SearchBar`.    |
+|  `hooks/`        |  Custom hooks for audio analysis (`useAudioAnalyzer`) and geolocation (`useGeolocation`).  |
+|   `lib/`     |   Utility functions, including validation schemas with Zod.   |
+|  `prisma/`        |  Prisma schema and migrations for database management.  |
+|   `public/`     |  Static assets like favicon, SVGs for icons, and the audio worker script.    |
+|   `next.config.ts`       |  Next.js configuration, including Webpack fixes for Leaflet.  |
+|    `tailwind.config.js`    |   Tailwind CSS configuration for styling.   |
+|    `tsconfig.json`      |  TypeScript configuration for the project.  |
+
+
+
 ### Technologies Used
 - Next.js (15.2.1): React framework for server-side rendering and routing, ensuring fast load times and SEO optimization.
 - Leaflet (1.9.4): JavaScript library for interactive maps, used for displaying noise reports.
@@ -105,3 +119,21 @@ The project is organized as follows:
 - React Leaflet (5.0.0): React components for integrating Leaflet maps.
 - SWR (2.3.3): React hooks for data fetching and caching, used for fetching noise reports.
 - Tailwind CSS (4.x): Utility-first CSS framework for responsive design.
+
+### Contributing
+To contribute to this project, please follow these steps:
+
+- Fork the repository to your GitHub account.
+- Create a new branch for your feature or bug fix:
+  `git checkout -b feature/your-feature-name`
+- Make your changes and commit them with descriptive messages.
+- Push to the branch and submit a pull request, detailing your changes and any testing performed.
+
+
+### License
+This project is licensed under the MIT License. See the LICENSE file for more details.
+
+
+This executes Prisma migrations and builds the Next.js app. Check the Vercel deployment documentation for more details.
+
+
