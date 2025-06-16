@@ -4,9 +4,11 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import useSWR from "swr";
+import { useSession } from "next-auth/react";
 import NoiseInput from "../components/NoiseInput";
 import useGeolocation from "../hooks/useGeolocation";
 import { NoiseReport, LatLng } from "../types";
+import BottomNav from "@/components/layout/BottomNav";
 
 const NoiseMap = dynamic(() => import("../components/NoiseMap"), {
   ssr: false,
@@ -19,6 +21,7 @@ const SearchBar = dynamic(() => import("../components/SearchBar"), {
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Home() {
+  const { data: session } = useSession();
   const { coordinates } = useGeolocation();
 
   const [noiseReports, setNoiseReports] = useState<NoiseReport[]>([]);
@@ -90,20 +93,19 @@ export default function Home() {
         />
       </div>
 
-      {/* Noise input component - fixed at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 sm:relative sm:bottom-auto">
+      {/* Noise input component - fixed at bottom, with padding for bottom nav when authenticated */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-20 ${
+          session ? "mb-16" : ""
+        } sm:relative sm:bottom-auto sm:mb-0`}
+      >
         <NoiseInput onNoiseReported={handleNoiseReported} />
       </div>
 
+      {/* Bottom navigation for authenticated users */}
+      {session && <BottomNav />}
+
       {/* Error message */}
-      {/* {error && (
-        <div className="absolute top-18 w-8/12 left-4 right-4 z-50   bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm sm:text-base">
-          {error}
-          <div className="text-sm mt-1">
-            Please check your database connection or try again later.
-          </div>
-        </div>
-      )} */}
       {error && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">
           <p className="font-semibold">{error}</p>

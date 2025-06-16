@@ -5,7 +5,6 @@ import "leaflet/dist/leaflet.css";
 import { NoiseReport, LatLng } from "../types";
 
 // Import HeatLayer type
-// Add this interface near your other type declarations
 interface LeafletElement extends HTMLElement {
   _leaflet_map?: L.Map;
 }
