@@ -96,3 +96,12 @@ model QuietRoute {
 
   @@map("quiet_routes")
 }
+
+model RateLimitEntry {
+  id         String   @id @default(cuid())
+  identifier String
+  createdAt  DateTime @default(now())
+
+  @@index([identifier, createdAt])
+  @@map("rate_limit_entries")
+}

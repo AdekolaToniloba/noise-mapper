@@ -33,7 +33,7 @@ export async function requireAuth() {
 export async function requireOnboarding() {
   const session = await requireAuth();
 
-  if (!session.user.onboarded) {
+  if (session.user && !session.user.onboarded) {
     redirect("/onboarding");
   }
 

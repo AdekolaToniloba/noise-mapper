@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-// import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { toast } from "sonner";
 
@@ -18,17 +17,15 @@ interface QuietRoute {
 }
 
 export default function QuietRoutesPage() {
-  //   const router = useRouter();
   const [isSearching, setIsSearching] = useState(false);
   const [startAddress, setStartAddress] = useState("");
   const [endAddress, setEndAddress] = useState("");
   const [showRouteForm, setShowRouteForm] = useState(false);
 
-  const {
-    data: routes,
-    error,
-    mutate,
-  } = useSWR<QuietRoute[]>("/api/quiet-routes", fetcher);
+  const { data: routes, error } = useSWR<QuietRoute[]>(
+    "/api/quiet-routes",
+    fetcher
+  );
 
   const handleFindRoute = async (e: React.FormEvent) => {
     e.preventDefault();

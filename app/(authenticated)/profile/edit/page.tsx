@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -99,7 +100,7 @@ export default function EditProfilePage() {
           <div className="flex flex-col items-center">
             <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 flex items-center justify-center text-white text-2xl font-semibold">
               {session?.user?.image ? (
-                <img
+                <Image
                   src={session.user.image}
                   alt="Profile"
                   className="w-full h-full rounded-full object-cover"

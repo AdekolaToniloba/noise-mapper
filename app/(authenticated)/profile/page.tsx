@@ -4,6 +4,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 
 const settingsSections = [
@@ -148,9 +149,10 @@ export default function ProfilePage() {
       .slice(0, 2);
   };
 
-  const formatJoinDate = (date?: string) => {
+  const formatJoinDate = (date?: string | Date) => {
     if (!date) return "Member";
-    return `Joined ${new Date(date).getFullYear()}`;
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+    return `Joined ${dateObj.getFullYear()}`;
   };
 
   return (
@@ -182,9 +184,11 @@ export default function ProfilePage() {
         <div className="bg-white rounded-lg p-6 mb-6 text-center">
           <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-semibold">
             {session?.user?.image ? (
-              <img
+              <Image
                 src={session.user.image}
                 alt={session.user.name || "Profile"}
+                width={96}
+                height={96}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (

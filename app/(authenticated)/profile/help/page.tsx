@@ -37,7 +37,7 @@ export default function HelpPage() {
     {
       question: "How do I delete my account?",
       answer:
-        "To delete your account, please contact our support team at support@noisemap.com. We'll process your request within 48 hours.",
+        "To delete your account, please contact our support team at admin@noisemap.xyz. We'll process your request within 48 hours.",
     },
   ];
 
@@ -75,7 +75,7 @@ export default function HelpPage() {
           <h2 className="text-lg font-semibold mb-4">Quick Links</h2>
           <div className="space-y-3">
             <a
-              href="mailto:support@noisemap.com"
+              href="mailto:admin@noisemap.xyz"
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100"
             >
               <div className="flex items-center space-x-3">
@@ -110,7 +110,7 @@ export default function HelpPage() {
             </a>
 
             <a
-              href="https://noisemap.com/privacy"
+              href="https://www.noisemap.xyz/privacy"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100"
@@ -190,7 +190,7 @@ export default function HelpPage() {
         {/* Contact Section */}
         <div className="mt-6 text-center text-sm text-gray-500">
           <p>Still need help?</p>
-          <p className="mt-1">Contact us at support@noisemap.com</p>
+          <p className="mt-1">Contact us at admin@noisemap.xyz</p>
         </div>
       </div>
     </div>

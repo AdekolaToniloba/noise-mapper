@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { hashPassword, validatePasswordStrength } from "@/utils/auth-helpers";
-import { authRateLimiter, rateLimit } from "@/lib/rate-limit";
+import { authRateLimit } from "@/lib/rate-limit";
 import { sendWelcomeEmail } from "@/lib/email";
 
 const prisma = new PrismaClient();
@@ -17,7 +17,7 @@ const signupSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting
-    const { success, headers } = await rateLimit(request, authRateLimiter);
+    const { success, headers } = await authRateLimit(request);
 
     if (!success) {
       return NextResponse.json(

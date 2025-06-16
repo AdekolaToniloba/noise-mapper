@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import { generateToken } from "@/utils/auth-helpers";
-import { authRateLimiter, rateLimit } from "@/lib/rate-limit";
+import { authRateLimit } from "@/lib/rate-limit";
 import { sendPasswordResetEmail } from "@/lib/email";
 
 const prisma = new PrismaClient();
@@ -15,7 +15,7 @@ const forgotPasswordSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Rate limiting - stricter for password reset
-    const { success, headers } = await rateLimit(request, authRateLimiter);
+    const { success, headers } = await authRateLimit(request);
 
     if (!success) {
       return NextResponse.json(

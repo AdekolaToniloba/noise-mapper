@@ -1,6 +1,7 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
-import { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
+import { User } from "next-auth";
+import type { Adapter } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -16,7 +17,7 @@ const loginSchema = z.object({
 });
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any,
+  adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -34,6 +35,14 @@ export const authOptions: NextAuthOptions = {
 
           const user = await prisma.user.findUnique({
             where: { email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              image: true,
+              password: true,
+              onboarded: true,
+            },
           });
 
           if (!user || !user.password) {
@@ -51,6 +60,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: user.name,
             image: user.image,
+            onboarded: user.onboarded,
           };
         } catch {
           return null;
@@ -66,7 +76,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
-        token.onboarded = (user as any).onboarded || false;
+        token.onboarded = (user as User).onboarded || false;
       }
 
       if (account?.provider === "google") {
