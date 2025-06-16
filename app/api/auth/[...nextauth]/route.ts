@@ -73,10 +73,15 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.onboarded = (user as User).onboarded || false;
+      }
+
+      // Handle session updates
+      if (trigger === "update" && session) {
+        token.onboarded = session.user.onboarded || token.onboarded;
       }
 
       if (account?.provider === "google") {
@@ -86,6 +91,17 @@ export const authOptions: NextAuthOptions = {
           data: { onboarded: true },
         });
         token.onboarded = true;
+      }
+
+      // Refresh onboarding status from database
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { onboarded: true },
+        });
+        if (dbUser) {
+          token.onboarded = dbUser.onboarded;
+        }
       }
 
       return token;

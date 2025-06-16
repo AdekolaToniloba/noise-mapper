@@ -40,13 +40,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Check onboarding status for authenticated users (except on onboarding page)
+  // Check onboarding status for authenticated users (except on onboarding page and API routes)
   if (
     token &&
     !token.onboarded &&
     !request.nextUrl.pathname.startsWith("/onboarding") &&
-    !isAuthPage &&
-    !isApiRoute
+    !request.nextUrl.pathname.startsWith("/api") &&
+    !isAuthPage
   ) {
     return NextResponse.redirect(new URL("/onboarding", request.url));
   }

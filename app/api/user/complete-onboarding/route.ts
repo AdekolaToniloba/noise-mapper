@@ -11,20 +11,38 @@ export async function POST() {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
+      console.error("No session or user ID found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await prisma.user.update({
+    console.log("Updating onboarding status for user:", session.user.id);
+
+    const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: { onboarded: true },
+      select: {
+        id: true,
+        email: true,
+        onboarded: true,
+      },
     });
 
-    return NextResponse.json({ success: true });
+    console.log("User updated successfully:", updatedUser);
+
+    return NextResponse.json({
+      success: true,
+      user: updatedUser,
+    });
   } catch (error) {
     console.error("Complete onboarding error:", error);
     return NextResponse.json(
-      { error: "Failed to complete onboarding" },
+      {
+        error: "Failed to complete onboarding",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect();
   }
 }

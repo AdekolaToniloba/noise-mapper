@@ -114,15 +114,27 @@ export default function OnboardingPage() {
     try {
       const response = await fetch("/api/user/complete-onboarding", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      if (response.ok) {
-        toast.success("Welcome to Noise Map!");
-        router.push("/");
-        router.refresh();
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to complete onboarding");
       }
+
+      toast.success("Welcome to Noise Map!");
+
+      // Force a hard refresh to update the session
+      //   window.location.href = "/";
+      router.push("/profile");
     } catch (error) {
-      toast.error("Failed to complete onboarding");
+      console.error("Onboarding error:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to complete onboarding"
+      );
     } finally {
       setIsLoading(false);
     }
