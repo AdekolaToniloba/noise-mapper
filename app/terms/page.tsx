@@ -1,5 +1,6 @@
 // app/terms/page.tsx
 import Link from "next/link";
+import TermsNav from "./TermsNav";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,33 +12,8 @@ export const metadata: Metadata = {
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link
-              href="/"
-              className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent"
-            >
-              Noise Map
-            </Link>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/map"
-                className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Open Map
-              </Link>
-              <Link
-                href="/signup"
-                className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Navigation as a client component */}
+      <TermsNav />
 
       {/* Content */}
       <div className="pt-24 pb-16 px-4">
@@ -45,7 +21,7 @@ export default function TermsOfServicePage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-8">
             Terms of Service
           </h1>
-          <p className="text-gray-600 mb-8">Effective Date: January 2024</p>
+          <p className="text-gray-600 mb-8">Effective Date: January 2025</p>
 
           <div className="prose prose-lg max-w-none">
             {/* ...previous sections... */}
@@ -150,6 +126,100 @@ export default function TermsOfServicePage() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-300 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="text-white font-semibold mb-4">Noise Map</h4>
+              <p className="text-sm">Find your quiet in the city</p>
+            </div>
+            <div>
+              <h5 className="text-white font-semibold mb-4">Features</h5>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="/map"
+                    className="hover:text-white transition-colors"
+                  >
+                    Interactive Map
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/quiet-routes"
+                    className="hover:text-white transition-colors"
+                  >
+                    Quiet Routes
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/map"
+                    className="hover:text-white transition-colors"
+                  >
+                    Report Noise
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="text-white font-semibold mb-4">Company</h5>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-white transition-colors"
+                  >
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="hover:text-white transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/terms"
+                    className="hover:text-white transition-colors"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="text-white font-semibold mb-4">Connect</h5>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="mailto:admin@noisemap.xyz"
+                    className="hover:text-white transition-colors"
+                  >
+                    admin@noisemap.xyz
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="/help"
+                    className="hover:text-white transition-colors"
+                  >
+                    Help Center
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+            <p>&copy; 2024 Noise Map. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

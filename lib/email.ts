@@ -79,6 +79,9 @@ www.noisemap.xyz
   try {
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log("Password reset email sent:", data.body);
+    console.log("Full API response:", JSON.stringify(data, null, 2));
+    console.log("Message ID:", data.body?.messageId);
+    console.log("Response status:", data.response?.statusCode);
     return {
       success: true,
       messageId: (data.body as { messageId?: string }).messageId || "sent",
