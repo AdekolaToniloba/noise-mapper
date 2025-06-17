@@ -1,7 +1,7 @@
 // components/NoiseInput.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useAudioAnalyzer from "../hooks/useAudioAnalyzer";
 import useGeolocation from "../hooks/useGeolocation";
 import { NoiseReport } from "../types";

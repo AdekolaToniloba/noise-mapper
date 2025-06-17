@@ -15,10 +15,6 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/profile") ||
     request.nextUrl.pathname.startsWith("/onboarding");
 
-  const isPublicRoute =
-    request.nextUrl.pathname === "/" ||
-    request.nextUrl.pathname.startsWith("/map");
-
   const isApiRoute = request.nextUrl.pathname.startsWith("/api");
 
   // Log API requests
