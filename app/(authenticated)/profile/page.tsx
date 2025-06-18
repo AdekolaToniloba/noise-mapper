@@ -34,7 +34,8 @@ const settingsSections = [
       {
         name: "Past Reports",
         description: "View your noise report history",
-        href: "/profile/reports",
+        // href: "/profile/reports",
+        href: "#",
         icon: (
           <svg
             className="w-5 h-5"
@@ -59,7 +60,9 @@ const settingsSections = [
       {
         name: "Notifications",
         description: "Manage your notification settings",
-        href: "/profile/notifications",
+        // href: "/profile/notifications",
+        href: "#",
+
         icon: (
           <svg
             className="w-5 h-5"

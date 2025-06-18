@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 const navItems = [
   {
     name: "Map",
-    href: "/",
+    href: "/map",
     icon: (active: boolean) => (
       <svg
         className={`w-6 h-6 ${active ? "text-blue-600" : "text-gray-500"}`}

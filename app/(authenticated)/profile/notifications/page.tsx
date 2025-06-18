@@ -109,7 +109,10 @@ export default function EditProfilePage() {
                 session?.user?.name?.charAt(0).toUpperCase() || "U"
               )}
             </div>
-            <button type="button" className="text-blue-600 text-sm font-medium">
+            <button
+              type="button"
+              className="text-blue-600 cursor-pointer text-sm font-medium"
+            >
               Change Photo
             </button>
           </div>
