@@ -23,6 +23,45 @@ export default function LandingPage() {
     },
   };
 
+  const features = [
+    {
+      icon: "M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z",
+      color: "blue",
+      title: "Report Noise Levels",
+      description:
+        "Use your device's microphone to measure actual noise levels or manually input decibel readings. No login required.",
+    },
+    {
+      icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
+      color: "teal",
+      title: "View Noise Heat Maps",
+      description:
+        "See real-time noise pollution visualized on interactive maps. Identify quiet zones and noisy areas at a glance.",
+    },
+    {
+      icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
+      color: "purple",
+      title: "Find Quiet Routes",
+      description:
+        "Discover the most peaceful paths through your city. Premium feature that requires a free account.",
+    },
+  ];
+
+  // Create a helper to map colors to full Tailwind classes:
+  function getColorClasses(color: string) {
+    switch (color) {
+      case "blue":
+        return { bg: "bg-blue-100", text: "text-blue-600" };
+      case "teal":
+        return { bg: "bg-teal-100", text: "text-teal-600" };
+      case "purple":
+        return { bg: "bg-purple-100", text: "text-purple-600" };
+      // add more cases if needed
+      default:
+        return { bg: "bg-gray-100", text: "text-gray-600" };
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white overflow-hidden">
       {/* Navigation */}
@@ -151,62 +190,45 @@ export default function LandingPage() {
             whileInView="animate"
             viewport={{ once: true }}
           >
-            {[
-              {
-                icon: "M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z",
-                color: "blue",
-                title: "Report Noise Levels",
-                description:
-                  "Use your device's microphone to measure actual noise levels or manually input decibel readings. No login required.",
-              },
-              {
-                icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
-                color: "teal",
-                title: "View Noise Heat Maps",
-                description:
-                  "See real-time noise pollution visualized on interactive maps. Identify quiet zones and noisy areas at a glance.",
-              },
-              {
-                icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
-                color: "purple",
-                title: "Find Quiet Routes",
-                description:
-                  "Discover the most peaceful paths through your city. Premium feature that requires a free account.",
-              },
-            ].map((feature, index) => (
-              <motion.div
-                key={index}
-                className="text-center"
-                variants={fadeIn}
-                onHoverStart={() => setHoveredFeature(index)}
-                onHoverEnd={() => setHoveredFeature(null)}
-              >
+            {features.map((feature, index) => {
+              const { bg, text } = getColorClasses(feature.color);
+              return (
                 <motion.div
-                  className={`w-20 h-20 bg-${feature.color}-100 rounded-full flex items-center justify-center mx-auto mb-6`}
-                  animate={{
-                    scale: hoveredFeature === index ? 1.1 : 1,
-                    rotate: hoveredFeature === index ? 360 : 0,
-                  }}
-                  transition={{ duration: 0.5 }}
+                  key={index}
+                  className="text-center"
+                  variants={fadeIn}
+                  onHoverStart={() => setHoveredFeature(index)}
+                  onHoverEnd={() => setHoveredFeature(null)}
                 >
-                  <svg
-                    className={`w-10 h-10 text-${feature.color}-600`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  <motion.div
+                    className={`${bg} w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6`}
+                    animate={{
+                      scale: hoveredFeature === index ? 1.1 : 1,
+                      rotate: hoveredFeature === index ? 360 : 0,
+                    }}
+                    transition={{ duration: 0.5 }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d={feature.icon}
-                    />
-                  </svg>
+                    <svg
+                      className={`w-10 h-10 ${text}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d={feature.icon}
+                      />
+                    </svg>
+                  </motion.div>
+                  <h4 className="text-xl font-semibold mb-3">
+                    {feature.title}
+                  </h4>
+                  <p className="text-gray-600">{feature.description}</p>
                 </motion.div>
-                <h4 className="text-xl font-semibold mb-3">{feature.title}</h4>
-                <p className="text-gray-600">{feature.description}</p>
-              </motion.div>
-            ))}
+              );
+            })}
           </motion.div>
         </div>
       </section>

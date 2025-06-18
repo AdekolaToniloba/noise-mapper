@@ -1,14 +1,15 @@
 // app/(auth)/reset-password/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useRouter, useSearchParams } from "next/navigation";
 
+// Zod schema and TypeScript type
 const resetPasswordSchema = z
   .object({
     password: z.string().min(8, "Password must be at least 8 characters"),
@@ -21,7 +22,9 @@ const resetPasswordSchema = z
 
 type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 
-export default function ResetPasswordPage() {
+// Child component that uses useSearchParams(), useRouter(), etc.
+// All the logic/UI that depends on token from search params goes here.
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -41,6 +44,7 @@ export default function ResetPasswordPage() {
 
   const password = watch("password");
 
+  // If token is missing/invalid, redirect with a toast
   useEffect(() => {
     if (!token) {
       toast.error("Invalid reset link");
@@ -50,7 +54,7 @@ export default function ResetPasswordPage() {
 
   // Check password strength
   const checkPasswordStrength = (pass: string) => {
-    const strength = [];
+    const strength: string[] = [];
     if (pass.length >= 8) strength.push("8+ characters");
     if (/[A-Z]/.test(pass)) strength.push("Uppercase letter");
     if (/[a-z]/.test(pass)) strength.push("Lowercase letter");
@@ -59,11 +63,11 @@ export default function ResetPasswordPage() {
     setPasswordStrength(strength);
   };
 
+  // Submit handler
   const onSubmit = async (data: ResetPasswordData) => {
     if (!token) return;
 
     setIsLoading(true);
-
     try {
       const response = await fetch("/api/auth/reset-password", {
         method: "POST",
@@ -99,6 +103,7 @@ export default function ResetPasswordPage() {
     }
   };
 
+  // If success, show success UI
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -131,6 +136,7 @@ export default function ResetPasswordPage() {
     );
   }
 
+  // Main form UI
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -145,6 +151,7 @@ export default function ResetPasswordPage() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
+            {/* New Password Field */}
             <div>
               <label
                 htmlFor="password"
@@ -157,6 +164,7 @@ export default function ResetPasswordPage() {
                 type="password"
                 autoComplete="new-password"
                 onChange={(e) => {
+                  // call react-hook-form's onChange and our strength checker
                   register("password").onChange(e);
                   checkPasswordStrength(e.target.value);
                 }}
@@ -198,6 +206,7 @@ export default function ResetPasswordPage() {
               )}
             </div>
 
+            {/* Confirm Password Field */}
             <div>
               <label
                 htmlFor="confirmPassword"
@@ -220,6 +229,7 @@ export default function ResetPasswordPage() {
             </div>
           </div>
 
+          {/* Submit Button */}
           <div>
             <button
               type="submit"
@@ -253,6 +263,7 @@ export default function ResetPasswordPage() {
             </button>
           </div>
 
+          {/* Back to login */}
           <div className="text-center">
             <Link
               href="/login"
@@ -264,5 +275,20 @@ export default function ResetPasswordPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+// Top-level page component: wrap ResetPasswordForm in Suspense
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          Loading...
+        </div>
+      }
+    >
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
