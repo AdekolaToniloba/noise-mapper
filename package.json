@@ -29,6 +29,7 @@
     "leaflet-geosearch": "^4.2.0",
     "leaflet.heat": "^0.2.0",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.517.0",
     "next": "15.2.1",
     "next-auth": "^4.24.5",
     "prisma": "^6.4.1",
